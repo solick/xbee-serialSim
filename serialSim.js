@@ -57,4 +57,4 @@ serialSim.prototype.write = function(data, callback) {
 };
 
 
-exports.serialSim = serialSim;
+exports.SerialSim = serialSim;
