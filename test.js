@@ -17,6 +17,9 @@ var serialSim = new SerialSim.SerialSim();
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
+var NodeSim = require('./nodeSim.js');
+var nodeSim = new NodeSim.nodeSim();
+
 
 // Something we might receive from an XBee...
 var raw_frame = new Buffer([
@@ -27,13 +30,23 @@ var raw_frame = new Buffer([
 xbeeAPI.on('data', function(data) {
 
 
-    console.log("data received " + data);
+    console.log(">> data received: " + data);
+});
+
+// All frames parsed by the XBee will be emitted here
+xbeeAPI.on("frame_object", function(frame) {
+    console.log(">> frame received: ", frame);
+
+    var frameObj = xbeeAPI.parseFrame(frame);
+
+    console.log('>> frame parsed: ', frameObj);
 });
 
 var bla = function bla(data) {
 
     console.log("bla: " + data);
     xbeeAPI.emit('data',data);
+    xbeeAPI.emit('frame_object', data);
 };
 
 eventEmitter.on('data', bla);
@@ -73,7 +86,7 @@ serialSim.open();
 
 
 
-
+/*
 eventEmitter.emit('data', raw_frame);
 
 serialSim.write("Test Frame", function(err) {
@@ -82,9 +95,18 @@ serialSim.write("Test Frame", function(err) {
     console.log(err);
 
 });
+*/
 
 
-serialSim.close();
+nodeSim.start();
+
+setTimeout(function() {
+    nodeSim.stop();
+    serialSim.close();
+
+}, 30000);
+
+
 
 /**************************************************/
 
