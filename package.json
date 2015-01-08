@@ -1,0 +1,21 @@
+{
+  "name": "serialSim",
+  "version": "1.0.0",
+  "description": "simulation of serial line communication for xbee-api framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "serialport",
+    "simulation",
+    "xbee-api",
+    "ZigBee",
+    "xbee"
+  ],
+  "author": "Lyn Matten",
+  "license": "ISC",
+  "dependencies": {
+    "xbee-api": "^0.3.7"
+  }
+}
