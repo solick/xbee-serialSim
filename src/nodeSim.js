@@ -5,6 +5,13 @@
 //var nodeList = require('./nodes.js');
 var events = require('events');
 
+
+/**
+ * Class NodeSim
+ * Simulation of nodes of a Xbee network
+ * @param nodeList
+ * @constructor
+ */
 var NodeSim = function(nodeList)
 {
 
@@ -19,8 +26,17 @@ var NodeSim = function(nodeList)
     }
 };
 
+/**
+ *
+ * @type {Object|Function|exports.EventEmitter}
+ * @private
+ */
 NodeSim.prototype.__proto__ = events.EventEmitter.prototype;
 
+
+/**
+ * Starts simulation of network traffic; initialize node specific events
+ */
 NodeSim.prototype.start = function() {
 
     var self = this;
@@ -40,6 +56,9 @@ NodeSim.prototype.start = function() {
 
 };
 
+/**
+ * stops simulation of netowrk traffic; removes all node specific events
+ */
 NodeSim.prototype.stop = function() {
 
     var self = this;
@@ -61,6 +80,12 @@ NodeSim.prototype.stop = function() {
 
 };
 
+/**
+ * emits event for node by delivereing its short mac address.
+ * The parameter self is necessary because the std 'this' is in this function the object of the timer, not of the class
+ * @param self
+ * @param shortMac
+ */
 NodeSim.prototype.raiseEvent = function(self, shortMac) {
 
 
@@ -69,10 +94,26 @@ NodeSim.prototype.raiseEvent = function(self, shortMac) {
 
 };
 
+/**
+ * Returns the number of registered events
+ * @returns {Number}
+ * @constructor
+ */
 NodeSim.prototype.EventCounter = function() {
 
     return this._eventList.length;
 
 };
+
+/**
+ * returns the complete list of simualted nodes.
+ * @returns {*}
+ */
+NodeSim.prototype.getNodelist = function() {
+
+    return this._nodeList;
+
+};
+
 
 exports.NodeSim = NodeSim;

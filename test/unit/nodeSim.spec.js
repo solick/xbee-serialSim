@@ -133,6 +133,31 @@ describe('nodeSim Class', function() {
         } );
 
 
+        describe('getNodelist() function', function() {
+
+            var nodeSimTest = null;
+
+            beforeEach(function() {
+
+                nodeSimTest = new NodeSim.NodeSim(nodeList);
+
+            });
+
+            it('should be implemented', function() {
+
+                expect(nodeSimTest.getNodelist).toBeDefined();
+
+            });
+
+            it('should return the delivered nodelist', function() {
+
+                expect(nodeSimTest.getNodelist()).toBe(nodeList);
+
+            });
+
+        });
+
+
 
     });
 
