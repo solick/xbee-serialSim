@@ -15,10 +15,12 @@ var NodeSim = function()
 
     /* initialize nodes and set timer */
 
+    /*
     for(index = 0; index < this._nodeList.length; index++)
     {
         console.log("node: " + this._nodeList[index].shortMac);
     }
+    */
 
 };
 
@@ -30,9 +32,13 @@ NodeSim.prototype.start = function() {
 
     for(index = 0; index < this._nodeList.length; index++)
     {
-        var timer = setInterval(self.raiseEvent, this._nodeList[index].LckInterval * 1000, this._nodeList[index].shortMac);
+        var timer = setInterval(self.raiseEvent, this._nodeList[index].LckInterval * 1000, this, this._nodeList[index].shortMac);
 
         this._eventList.push(timer);
+        if(index == this._eventList.length -1)
+        {
+            self.emit('started');
+        }
     }
 
 
@@ -41,19 +47,37 @@ NodeSim.prototype.start = function() {
 
 NodeSim.prototype.stop = function() {
 
-    //var self = this;
+    var self = this;
+
+    if(this._eventList.length == 0)
+    {
+        self.emit('stopped');
+        return;
+    }
 
     for(index = 0; index < this._eventList.length; index++)
     {
         clearInterval(this._eventList[index]);
+        if(index == this._eventList.length -1)
+        {
+            self.emit('stopped');
+        }
     }
 
 };
 
-NodeSim.prototype.raiseEvent = function(shortMac) {
+NodeSim.prototype.raiseEvent = function(self, shortMac) {
+
 
     console.log("event raised for " + shortMac);
+    self.emit('sendFrame', shortMac);
 
 };
 
-exports.nodeSim = NodeSim;
+NodeSim.prototype.EventCounter = function() {
+
+    return this._eventList.length;
+
+};
+
+exports.NodeSim = NodeSim;
