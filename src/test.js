@@ -50,9 +50,9 @@ var bla = function bla(data) {
     xbeeAPI.emit('frame_object', data);
 };
 
-var sendXbeeFrame = function(shortMac) {
+var sendXbeeFrame = function(node) {
 
-    console.log("sending frame to " + shortMac);
+    console.log("sending frame to " + node.shortMac);
 
 };
 

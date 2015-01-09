@@ -88,9 +88,19 @@ NodeSim.prototype.stop = function() {
  */
 NodeSim.prototype.raiseEvent = function(self, shortMac) {
 
+    var node = null;
 
-    console.log("event raised for " + shortMac);
-    self.emit('sendFrame', shortMac);
+    for (index = 0; index < self._nodeList.length; index++)
+    {
+        if(self._nodeList[index].shortMac === shortMac)
+        {
+            node = self._nodeList[index];
+        }
+    }
+
+
+    //console.log("event raised for ", node);
+    self.emit('sendFrame', node);
 
 };
 
