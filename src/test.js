@@ -18,7 +18,7 @@ var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
 var NodeSim = require('./nodeSim.js');
-var nodeSim = new NodeSim.nodeSim();
+var nodeSim = new NodeSim.NodeSim();
 
 
 // Something we might receive from an XBee...
@@ -49,7 +49,28 @@ var bla = function bla(data) {
     xbeeAPI.emit('frame_object', data);
 };
 
+var sendXbeeFrame = function(shortMac) {
+
+    console.log("sending frame to " + shortMac);
+
+};
+
+var displayStart = function() {
+
+    console.log("Event: nodeSim started.");
+
+};
+
+var displayOpen = function() {
+
+    console.log("Event: serialSim started.");
+};
+
+
 eventEmitter.on('data', bla);
+nodeSim.on('sendFrame', sendXbeeFrame);
+nodeSim.on('started', displayStart);
+serialSim.on('open', displayOpen);
 
 
 /**
