@@ -2,10 +2,10 @@
  * Created by lynmatten on 08.01.15.
  */
 
-var nodeList = require('./nodes.js');
+//var nodeList = require('./nodes.js');
 var events = require('events');
 
-var NodeSim = function()
+var NodeSim = function(nodeList)
 {
 
     events.EventEmitter.call(this);
@@ -13,15 +13,10 @@ var NodeSim = function()
     this._nodeList = nodeList;
     this._eventList = [];
 
-    /* initialize nodes and set timer */
-
-    /*
-    for(index = 0; index < this._nodeList.length; index++)
+    if(this._nodeList == null || this._nodeList === 'undefined')
     {
-        console.log("node: " + this._nodeList[index].shortMac);
+        throw new Error('no nodelist found.');
     }
-    */
-
 };
 
 NodeSim.prototype.__proto__ = events.EventEmitter.prototype;

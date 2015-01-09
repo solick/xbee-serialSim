@@ -17,8 +17,9 @@ var serialSim = new SerialSim.SerialSim();
 var events = require('events');
 var eventEmitter = new events.EventEmitter();
 
+var nodeList = require('./nodes.js');
 var NodeSim = require('./nodeSim.js');
-var nodeSim = new NodeSim.NodeSim();
+var nodeSim = new NodeSim.NodeSim(nodeList);
 
 
 // Something we might receive from an XBee...
