@@ -123,6 +123,27 @@ describe('nodeSim Class', function() {
 
             });
 
+            it('should have 0 Events listed after stopping', function(done) {
+
+
+
+                nodeSimTest.on('started', function() {
+
+                    nodeSimTest.stop();
+
+                });
+
+                nodeSimTest.on('stopped', function() {
+
+                    expect(nodeSimTest.EventCounter()).toBe(0);
+                    done();
+
+                });
+
+                nodeSimTest.start();
+
+            });
+
 
         });
 
