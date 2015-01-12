@@ -74,6 +74,9 @@ NodeSim.prototype.stop = function() {
         /* TODO: Remove from list */
 
     }
+
+    /* clear eventlist */
+    this._eventList = [];
     self.emit('stopped');
 
 
