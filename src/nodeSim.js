@@ -46,11 +46,10 @@ NodeSim.prototype.start = function() {
         var timer = setInterval(self.raiseEvent, this._nodeList[index].LckInterval * 1000, this, this._nodeList[index].shortMac);
 
         this._eventList.push(timer);
-        if(index == this._eventList.length -1)
-        {
-            self.emit('started');
-        }
+
     }
+    self.emit('started');
+
 
 
 
@@ -72,11 +71,11 @@ NodeSim.prototype.stop = function() {
     for(index = 0; index < this._eventList.length; index++)
     {
         clearInterval(this._eventList[index]);
-        if(index == this._eventList.length -1)
-        {
-            self.emit('stopped');
-        }
+        /* TODO: Remove from list */
+
     }
+    self.emit('stopped');
+
 
 };
 
