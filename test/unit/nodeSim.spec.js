@@ -51,6 +51,12 @@ describe('nodeSim Class', function() {
 
             });
 
+            afterEach(function() {
+
+                nodeSimTest.stop();
+
+            });
+
             it('should be implemented', function() {
 
                 expect(nodeSimTest.start).toBeDefined();
@@ -64,6 +70,18 @@ describe('nodeSim Class', function() {
                     expect(true).toBeTruthy();
                     done();
                     nodeSimTest.stop();
+                });
+
+                nodeSimTest.start();
+
+            });
+
+            it('should have 2 events listed after initialization', function(done) {
+
+                nodeSimTest.on('started', function() {
+                    expect(nodeSimTest.EventCounter()).toBe(2);
+                    done();
+                    //nodeSimTest.stop();
                 });
 
                 nodeSimTest.start();
