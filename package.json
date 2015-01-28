@@ -1,6 +1,6 @@
 {
   "name": "xbee-serialSim",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "simulation of serial line communication for xbee-api framework",
   "main": "index.js",
   "scripts": {
