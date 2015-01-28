@@ -5,6 +5,12 @@
 //var nodeList = require('./nodes.js');
 var events = require('events');
 
+var xbee_api = require('xbee-api');
+var C = xbee_api.constants;
+var xbeeAPI = new xbee_api.XBeeAPI();
+
+var xbeeHelper = require('xbee-helper');
+var ZigBeeHelper = new xbeeHelper.ZigBeeHelper();
 
 /**
  * Class NodeSim
@@ -37,19 +43,22 @@ NodeSim.prototype.__proto__ = events.EventEmitter.prototype;
 /**
  * Starts simulation of network traffic; initialize node specific events
  */
-NodeSim.prototype.start = function() {
+NodeSim.prototype.start = function(callback) {
 
     var self = this;
 
     for(index = 0; index < this._nodeList.length; index++)
     {
-        var timer = setInterval(self.raiseEvent, this._nodeList[index].LckInterval * 1000, this, this._nodeList[index].shortMac);
+        var timer1 = setInterval(self.raiseEvent, this._nodeList[index].LckInterval * 1000, this, this._nodeList[index].shortMac, "L");
+        var timer2 = setInterval(self.raiseEvent, this._nodeList[index].DateInterval * 1000, this, this._nodeList[index].shortMac,"D");
 
-        this._eventList.push(timer);
+        this._eventList.push(timer1);
+        this._eventList.push(timer2);
 
     }
     self.emit('started');
 
+    if(callback) { callback(); }
 
 
 
@@ -58,26 +67,29 @@ NodeSim.prototype.start = function() {
 /**
  * stops simulation of netowrk traffic; removes all node specific events
  */
-NodeSim.prototype.stop = function() {
+NodeSim.prototype.stop = function(callback) {
 
     var self = this;
 
     if(this._eventList.length == 0)
     {
         self.emit('stopped');
+
+        if(callback) { callback(); }
         return;
     }
 
     for(index = 0; index < this._eventList.length; index++)
     {
         clearInterval(this._eventList[index]);
-        /* TODO: Remove from list */
 
     }
 
     /* clear eventlist */
     this._eventList = [];
     self.emit('stopped');
+
+    if(callback) { callback(); }
 
 
 };
@@ -88,7 +100,7 @@ NodeSim.prototype.stop = function() {
  * @param self
  * @param shortMac
  */
-NodeSim.prototype.raiseEvent = function(self, shortMac) {
+NodeSim.prototype.raiseEvent = function(self, shortMac, type) {
 
     var node = null;
 
@@ -100,9 +112,45 @@ NodeSim.prototype.raiseEvent = function(self, shortMac) {
         }
     }
 
+    if(node !== null)
+    {
+        var dataStr = "";
 
-    //console.log("event raised for ", node);
-    self.emit('sendFrame', node);
+        if(type == 'L')
+        {
+            dataStr = "AT+1=OK"
+        }
+        else if(type == 'D')
+        {
+            dataStr = node.data;
+        }
+
+        var frame_obj = {
+            type: C.FRAME_TYPE.ZIGBEE_RECEIVE_PACKET,
+            remote16: node.shortMac,
+            remote64: node.longMac,
+            receiveOptions: 0x01,
+            data: ZigBeeHelper.StringToByteArray(dataStr)
+
+
+        };
+
+/*
+        var packet  = new Buffer([0x7E, 0x00, 0x0F, 0x90, 0x00, 0x01,
+            0x3A, 0x20, 0x00, 0x00, 0x00, 0x01, 0x01, 0xA1, 0x01,
+            0xA1, 0x23, 0x15, 0x97]);
+
+        var packetEscaped = xbeeAPI.escape(packet);
+
+*/
+        self.emit('sendFrame', frame_obj);
+
+    }
+    else
+    {
+        throw new Error('Node for shortMac not found.');
+    }
+
 
 };
 
@@ -127,5 +175,106 @@ NodeSim.prototype.getNodelist = function() {
 
 };
 
+/**
+ * returns node object for long mac address
+ * @param longMac
+ * @returns {*}
+ */
+NodeSim.prototype.getNodeForLongMac = function(longMac)
+{
+    for(var i = 0; i < this._nodeList.length; i++)
+    {
+        if(this._nodeList[i].longMac == longMac.toUpperCase())
+        {
+            return this._nodeList[i];
+        }
+    }
+
+    return null;
+}
+
+/**
+ * simulation of receiption of xbeee raw frames
+ * @param data
+ */
+NodeSim.prototype.receiveFrame = function(data) {
+
+    var self = this;
+
+    //console.log("received frame by serialSim: ", data);
+
+    var data_obj = xbeeAPI.parseFrame(data);
+
+    //console.log('parsed frame by serialSim:', data_obj);
+    console.log(ZigBeeHelper.printFrame(data_obj));
+
+    var node = this.getNodeForLongMac(data_obj.destination64);
+
+    if(node === undefined || node === null && data_obj.destination64.toUpperCase() !== '000000000000FFFF') /** if broadcast **/
+    {
+        throw new Error('Node for longmac not existing');
+        return null;
+    }
+
+
+
+    switch(data_obj.type)
+    {
+        case C.FRAME_TYPE.REMOTE_AT_COMMAND_REQUEST:
+
+
+            switch(data_obj.command)
+            {
+                case 'MY':
+
+
+                    //console.log("REMOTE_AT_COMMAND_REQUEST");
+
+                    for(var i = 0; i < this._nodeList.length; i++) {
+
+                        var ret_obj = { type: C.FRAME_TYPE.REMOTE_COMMAND_RESPONSE,
+                            //id: 1,
+                            remote64: this._nodeList[i].longMac,
+                            remote16: this._nodeList[i].shortMac,
+                            command: 'MY',
+                            commandStatus: 1,
+                            commandData: []
+                        };
+
+
+                        var emmiterForObject = function(ret_obj_inner) {
+
+                            self.emit('sendFrame', ret_obj_inner);
+                        };
+
+                        setTimeout(emmiterForObject, 1000 * (i+1), ret_obj);
+
+                    }
+
+                    /** return to avoid double emitting **/
+                    return;
+
+                    break;
+            }
+
+
+
+            break;
+
+
+
+
+        default:
+
+            console.log('UNKNOWN_PACKET_TYPE');
+
+            break;
+    }
+
+
+};
+
 
 exports.NodeSim = NodeSim;
+
+

@@ -29,12 +29,25 @@ var nodeList = [
 
 describe('nodeSim Class', function() {
 
-    var nodeSim = new NodeSim.NodeSim(nodeList);
+    var nodeSimTest = null;
+
+    beforeEach(function() {
+
+        nodeSimTest = new NodeSim.NodeSim(nodeList);
+
+    });
+
+    afterEach(function() {
+
+        nodeSimTest.stop();
+
+    });
+
 
     it('should create a valid object', function() {
 
-        expect(nodeSim).toBeDefined();
-        expect(nodeSim).not.toBeNull();
+        expect(nodeSimTest).toBeDefined();
+        expect(nodeSimTest).not.toBeNull();
     });
 
     describe('API', function() {
@@ -43,19 +56,6 @@ describe('nodeSim Class', function() {
 
         describe('start() function', function() {
 
-            var nodeSimTest = null;
-
-            beforeEach(function() {
-
-                nodeSimTest = new NodeSim.NodeSim(nodeList);
-
-            });
-
-            afterEach(function() {
-
-                nodeSimTest.stop();
-
-            });
 
             it('should be implemented', function() {
 
@@ -63,7 +63,7 @@ describe('nodeSim Class', function() {
 
             });
 
-            it('shoud throw started event after call start()', function(done) {
+            it('should throw started event after call start()', function(done) {
 
                 nodeSimTest.on('started', function() {
 
@@ -73,6 +73,16 @@ describe('nodeSim Class', function() {
                 });
 
                 nodeSimTest.start();
+
+            });
+
+            it('should use the callback method if used', function(done) {
+
+                nodeSimTest.start(function() {
+
+                    expect(true).toBeTruthy();
+                    done();
+                });
 
             });
 
@@ -95,13 +105,6 @@ describe('nodeSim Class', function() {
 
         describe('stop() function', function() {
 
-            var nodeSimTest = null;
-
-            beforeEach(function() {
-
-                nodeSimTest = new NodeSim.NodeSim(nodeList);
-
-            });
 
             it('should be implemented', function() {
 
@@ -122,6 +125,17 @@ describe('nodeSim Class', function() {
 
 
             });
+
+            it('should use the callback method if used', function(done) {
+
+                nodeSimTest.stop(function() {
+
+                    expect(true).toBeTruthy();
+                    done();
+                });
+
+            });
+
 
             it('should have 0 Events listed after stopping', function(done) {
 
@@ -149,13 +163,6 @@ describe('nodeSim Class', function() {
 
         describe('EventCounter() function', function(){
 
-            var nodeSimTest = null;
-
-            beforeEach(function() {
-
-                nodeSimTest = new NodeSim.NodeSim(nodeList);
-
-            });
 
             it('should be implemented', function() {
 
@@ -174,13 +181,6 @@ describe('nodeSim Class', function() {
 
         describe('getNodelist() function', function() {
 
-            var nodeSimTest = null;
-
-            beforeEach(function() {
-
-                nodeSimTest = new NodeSim.NodeSim(nodeList);
-
-            });
 
             it('should be implemented', function() {
 
@@ -192,6 +192,30 @@ describe('nodeSim Class', function() {
 
                 expect(nodeSimTest.getNodelist()).toBe(nodeList);
 
+            });
+
+        });
+
+        describe('receiveFrame() function', function() {
+
+            it('should be implemented', function() {
+
+                expect(nodeSimTest.receiveFrame).toBeDefined();
+            });
+
+        });
+
+
+        describe('getNodeForLongMac() function()',function() {
+
+            it('should be implemented', function() {
+
+                expect(nodeSimTest.getNodeForLongMac).toBeDefined();
+            });
+
+            it('should return a node object for a long mac address', function() {
+
+                expect(nodeSimTest.getNodeForLongMac('0013A2000000001')).toEqual(nodeList[0]);
             });
 
         });
