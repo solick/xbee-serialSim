@@ -7,7 +7,7 @@ var events = require('events');
 
 
 /***
- * Class serialSim
+ * Class xbee-serialSim
  * simulates a serial line communication for xbee-api
  * @param path
  * @param options

@@ -42,7 +42,7 @@ var displayStart = function() {
 
 var displayOpen = function() {
 
-    console.log("Event: serialSim started.");
+    console.log("Event: xbee-serialSim started.");
 };
 
 
@@ -69,7 +69,7 @@ serialSim.on('receiveFrame', passFrameToNodeSim);
 
 serialSim.open(function() {
 
-    console.log("Event: serialSim started.");
+    console.log("Event: xbee-serialSim started.");
 
     nodeSim.start(function() {
 

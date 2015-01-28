@@ -201,11 +201,11 @@ NodeSim.prototype.receiveFrame = function(data) {
 
     var self = this;
 
-    //console.log("received frame by serialSim: ", data);
+    //console.log("received frame by xbee-serialSim: ", data);
 
     var data_obj = xbeeAPI.parseFrame(data);
 
-    //console.log('parsed frame by serialSim:', data_obj);
+    //console.log('parsed frame by xbee-serialSim:', data_obj);
     console.log(ZigBeeHelper.printFrame(data_obj));
 
     var node = this.getNodeForLongMac(data_obj.destination64);

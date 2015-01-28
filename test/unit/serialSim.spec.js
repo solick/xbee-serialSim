@@ -5,7 +5,7 @@
 
 var SerialSim = require('../../src/serialSim.js');
 
-describe('serialSim Class', function() {
+describe('xbee-serialSim Class', function() {
 
     var serialSim = new SerialSim.SerialSim();
 
