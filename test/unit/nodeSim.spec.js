@@ -10,7 +10,8 @@ var nodeList = [
     {
         shortMac: "01A1",
         longMac: "0013A2000000001",
-        LckInterval: 3,
+        LckInterval: 20,
+        DateInterval: 30,
         data: "AT+1=23.15",
         type: "Temperature Sensor"
 
@@ -18,13 +19,15 @@ var nodeList = [
     {
         shortMac: "01A2",
         longMac: "0013A2000000002",
-        LckInterval: 8,
+        LckInterval: 30,
+        DateInterval: 30,
         data: "AT+1=0",
         type: "Door Contact Sensor"
 
     }
 
 ];
+
 
 
 describe('nodeSim Class', function() {
@@ -86,10 +89,10 @@ describe('nodeSim Class', function() {
 
             });
 
-            it('should have 2 events listed after initialization', function(done) {
+            it('should have all events listed after initialization', function(done) {
 
                 nodeSimTest.on('started', function() {
-                    expect(nodeSimTest.EventCounter()).toBe(2);
+                    expect(nodeSimTest.EventCounter()).toBe(nodeList.length *2);
                     done();
                     //nodeSimTest.stop();
                 });
