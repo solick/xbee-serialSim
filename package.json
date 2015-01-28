@@ -1,6 +1,6 @@
 {
   "name": "xbee-serialSim",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "simulation of serial line communication for xbee-api framework",
   "main": "index.js",
   "scripts": {
@@ -28,5 +28,9 @@
     "karma-chrome-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.4",
     "karma-spec-reporter": "0.0.16"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/solick/xbee-serialSim"
   }
 }
