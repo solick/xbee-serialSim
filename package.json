@@ -1,10 +1,10 @@
 {
   "name": "serialSim",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "simulation of serial line communication for xbee-api framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jasmine-node ./test --watch ./src --color"
   },
   "keywords": [
     "serialport",
@@ -14,9 +14,12 @@
     "xbee"
   ],
   "author": "Lyn Matten",
-  "license": "ISC",
+  "license": "GNU GPL V2",
   "dependencies": {
-    "xbee-api": "^0.3.7"
+    "buffer-builder": "^0.2.0",
+    "buffer-reader": "0.0.2",
+    "xbee-api": "^0.3.7",
+    "xbee-helper": "*"
   },
   "devDependencies": {
     "jasmine-core": "^2.1.3",
