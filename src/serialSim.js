@@ -8,7 +8,6 @@ var NodeSim = require('./nodeSim.js');
 var zbh = require('xbee-helper');
 var helper = new zbh.ZigBeeHelper();
 
-
 var events = require('events');
 
 

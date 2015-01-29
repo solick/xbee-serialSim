@@ -12,6 +12,7 @@ var SerialSim = require('./serialSim.js');
 var serialSim = new SerialSim.SerialSim(xbeeAPI, nodeList);
 
 
+/** Example usage **/
 
 /******************************************/
 
