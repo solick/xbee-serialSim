@@ -3,6 +3,12 @@
  */
 
 
+var NodeSim = require('./nodeSim.js');
+
+var zbh = require('xbee-helper');
+var helper = new zbh.ZigBeeHelper();
+
+
 var events = require('events');
 
 
@@ -10,15 +16,77 @@ var events = require('events');
  * Class xbee-serialsim
  * simulates a serial line communication for xbee-api
  * @param path
- * @param options
+ * @param xbeeObj
  * @constructor
  */
-var serialSim = function(path, options) {
+var serialSim = function(xbeeObj, nodeList) {
+
+    var self = this;
 
     events.EventEmitter.call(this);
     this._open = false;
-    this._path = path;
-    this._options = options;
+    this._nodeList = nodeList;
+    this._xbeeObj = xbeeObj;
+
+    if(xbeeObj == undefined || xbeeObj == null)
+    {
+        throw new Error("No instance of xbee-api found.");
+    }
+
+    this._nodeSim = new NodeSim.NodeSim(this._nodeList);
+
+
+    /**********/
+
+    this._xbeeObj.on('data', function(data) {
+        //console.log(">> data received: ", data);
+    });
+
+// All frames parsed by the XBee will be emitted here
+    this._xbeeObj.on("frame_object", function(frame) {
+        //console.log(">> frame received by xbeeAPI: ", frame);
+        console.log(helper.printFrame(frame));
+    });
+
+    var emitXbee = function (data) {
+
+        this._xbeeObj.emit('data',data);
+        this._xbeeObj.emit('frame_object', data);
+    };
+
+
+    var displayStart = function() {
+
+        console.log("Event: nodeSim started. -- " + self._nodeSim.EventCounter() + " Events.");
+
+    };
+
+    var displayOpen = function() {
+
+        console.log("Event: xbee-serialsim started.");
+    };
+
+
+    this._nodeSim.on('sendFrame', function(rawFrame) {
+
+        self.read(rawFrame);
+
+    });
+
+    var passFrameToNodeSim = function(data) {
+
+        self._nodeSim.receiveFrame(data);
+    };
+
+    this._nodeSim.on('started', displayStart);
+    this.on('open', displayOpen);
+
+    this.on('frame_object', emitXbee);
+
+    this.on('receiveFrame', passFrameToNodeSim);
+
+    /*********/
+
 
 };
 
@@ -41,6 +109,12 @@ serialSim.prototype.open = function(callback) {
 
     //console.log("SerialSim opened.");
 
+    this._nodeSim.start(function() {
+
+        console.log("Event: nodeSim started. -- " + self._nodeSim.EventCounter() + " Events.");
+
+    });
+
     self.emit('open');
 
     if(callback) { callback(); }
@@ -58,10 +132,14 @@ serialSim.prototype.close = function(callback) {
 
     //console.log("SerialSim closed.");
 
-    self.emit('close');
-    self.removeAllListeners();
+    this._nodeSim.stop(function() {
+        self.emit('close');
+        self.removeAllListeners();
 
-    if(callback) { callback(); }
+        if(callback) { callback(); }
+    });
+
+
 
 };
 

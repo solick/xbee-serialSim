@@ -6,63 +6,11 @@
 var xbee_api = require('xbee-api');
 var C = xbee_api.constants;
 var xbeeAPI = new xbee_api.XBeeAPI();
-var zbh = require('xbee-helper');
-var helper = new zbh.ZigBeeHelper();
-
-var SerialSim = require('./serialSim.js');
-var serialSim = new SerialSim.SerialSim();
 
 var nodeList = require('./nodes.js');
-var NodeSim = require('./nodeSim.js');
-var nodeSim = new NodeSim.NodeSim(nodeList);
+var SerialSim = require('./serialSim.js');
+var serialSim = new SerialSim.SerialSim(xbeeAPI, nodeList);
 
-
-xbeeAPI.on('data', function(data) {
-    //console.log(">> data received: ", data);
-});
-
-// All frames parsed by the XBee will be emitted here
-xbeeAPI.on("frame_object", function(frame) {
-    //console.log(">> frame received by xbeeAPI: ", frame);
-    console.log(helper.printFrame(frame));
-});
-
-var emitXbee = function (data) {
-
-    xbeeAPI.emit('data',data);
-    xbeeAPI.emit('frame_object', data);
-};
-
-
-var displayStart = function() {
-
-    console.log("Event: nodeSim started. -- " + nodeSim.EventCounter() + " Events.");
-
-};
-
-var displayOpen = function() {
-
-    console.log("Event: xbee-serialsim started.");
-};
-
-
-nodeSim.on('sendFrame', function(rawFrame) {
-
-    serialSim.read(rawFrame);
-
-});
-
-var passFrameToNodeSim = function(data) {
-
-    nodeSim.receiveFrame(data);
-};
-
-nodeSim.on('started', displayStart);
-serialSim.on('open', displayOpen);
-
-serialSim.on('frame_object', emitXbee);
-
-serialSim.on('receiveFrame', passFrameToNodeSim);
 
 
 /******************************************/
@@ -71,11 +19,7 @@ serialSim.open(function() {
 
     console.log("Event: xbee-serialsim started.");
 
-    nodeSim.start(function() {
 
-        console.log("Event: nodeSim started. -- " + nodeSim.EventCounter() + " Events.");
-
-    });
 
     setTimeout(function() {
 
@@ -97,9 +41,8 @@ serialSim.open(function() {
     }, 500);
 
     setTimeout(function() {
-        nodeSim.stop(function() {
-            serialSim.close();
-        });
+
+        serialSim.close();
 
 
     }, 90000);
