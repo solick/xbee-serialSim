@@ -53,13 +53,13 @@ To keep it simple, the simulation don´t emit raw buffer frames but JSON objects
 
 At the test.js a simple usage is shown.
 
-The basic usage starts at line 70 where the serialsim.open() function is called. There is either a callback or an event 'open' emitted after success.
+At the constructor of serialSim, the nodelist and xbee-api instance need to be passed.
 
-After that, the nodeSim.start() function should be called to start the simulation.
+The basic usage starts when the serialsim.open() function is called. There is either a callback or an event 'open' emitted after success. During this open function, the simulation will be started and the events for the nodes will be registered.
 
 For each node, two events will be registered, which emmits an event after the defined interval. one for the lifecheck and one for the dateinterval.
 
-These events creates JSON objects and emmits them outside to be catched by the serialSim object. This ojbect catches the event and emmits directly in the xbee-api object the event which passes the JSON object.
+These events creates JSON objects and emmits them outside to be catched by the serialSim object. This object catches the event and emmits directly in the xbee-api object the event which passes the JSON object.
 
 Writing to the serial line simulation works similar:
 
