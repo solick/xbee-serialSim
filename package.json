@@ -1,8 +1,8 @@
 {
   "name": "xbee-serialsim",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "simulation of serial line communication for xbee-api framework",
-  "main": "index.js",
+  "main": "./src/serialSim.js",
   "scripts": {
     "test": "jasmine-node ./test --watch ./src --color"
   },
