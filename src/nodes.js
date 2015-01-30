@@ -8,7 +8,7 @@ var nodeList = [
 
     {
         shortMac: "01A1",
-        longMac: "0013A2000000001",
+        longMac: "0013A20000000001",
         LckInterval: 20,
         DateInterval: 30,
         data: "AT+1=23.15",
@@ -17,7 +17,7 @@ var nodeList = [
     },
     {
         shortMac: "01A2",
-        longMac: "0013A2000000002",
+        longMac: "0013A20000000002",
         LckInterval: 30,
         DateInterval: 30,
         data: "AT+1=0",
