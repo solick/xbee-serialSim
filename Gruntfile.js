@@ -25,6 +25,10 @@ module.exports = function(grunt) {
             },
             rename_actual_pack_to_latest: {
                 cmd: 'cp ' + pkg.name + '-' + pkg.version + '.tgz ' + pkg.name + '.tgz'
+            },
+            copy_to_local_modules_folder: {
+                cmd: 'cp ' + pkg.name + '-' + pkg.version + '.tgz ' + '../local_modules/'
+
             }
         }
 
@@ -37,7 +41,7 @@ module.exports = function(grunt) {
 
     });
 
-    grunt.registerTask('pack', ['exec:npm_pack','exec:rename_actual_pack_to_latest']);
+    grunt.registerTask('pack', ['exec:npm_pack','exec:rename_actual_pack_to_latest', 'exec:copy_to_local_modules_folder']);
 
     grunt.registerTask('version', 'displays name and version', function() {
 
