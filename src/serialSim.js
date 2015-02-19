@@ -163,9 +163,9 @@ serialSim.prototype.write = function(data, callback) {
 
     if(callback) {
 
-        var err = new Error('Unknown Error while sending data: ' + data);
+        //var err = new Error('Unknown Error while sending data: ' + data);
 
-        callback(err);
+        callback();
     }
 
 };

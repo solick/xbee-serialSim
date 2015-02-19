@@ -262,7 +262,14 @@ NodeSim.prototype.receiveFrame = function(data) {
             break;
 
 
+        case C.FRAME_TYPE.ZIGBEE_RECEIVE_PACKET:
 
+            var cmd_obj = ZigBeeHelper.getATCommand(data_obj.data);
+
+            console.log("cmd_obj: ", cmd_obj);
+
+
+            break;
 
         default:
 
