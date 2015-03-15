@@ -2,6 +2,7 @@
  * Created by lynmatten on 08.01.15.
  */
 
+require('rootpath')();
 
 var NodeSim = require('./nodeSim.js');
 
@@ -10,6 +11,17 @@ var helper = new zbh.ZigBeeHelper();
 
 var events = require('events');
 
+var genConfig = null;
+
+try {
+    genConfig = require('config.js');
+}
+catch(err) {
+    genConfig = {};
+    genConfig.DebugMessages = true;
+    genConfig.DebugMessagesSimulation = true;
+
+}
 
 /***
  * Class xbee-serialsim
@@ -44,7 +56,13 @@ var serialSim = function(xbeeObj, nodeList) {
 // All frames parsed by the XBee will be emitted here
     this._xbeeObj.on("frame_object", function(frame) {
         //console.log(">> frame received by xbeeAPI: ", frame);
-        console.log(helper.printFrame(frame));
+
+        if(genConfig.DebugMessages == true && genConfig.DebugMessagesSimulation == true)
+        {
+            console.log(helper.printFrame(frame));
+        }
+
+
     });
 
     var emitXbee = function (data) {
@@ -56,13 +74,16 @@ var serialSim = function(xbeeObj, nodeList) {
 
     var displayStart = function() {
 
-        console.log("Event: nodeSim started. -- " + self._nodeSim.EventCounter() + " Events.");
+        if(genConfig.DebugMessages == true) {
 
+
+            console.log("Event: nodeSim started. -- " + self._nodeSim.EventCounter() + " Events.");
+        }
     };
 
     var displayOpen = function() {
 
-        console.log("Event: xbee-serialsim started.");
+        console.log(" xbee-serialsim started.");
     };
 
 
@@ -110,7 +131,11 @@ serialSim.prototype.open = function(callback) {
 
     this._nodeSim.start(function() {
 
-        console.log("Event: nodeSim started. -- " + self._nodeSim.EventCounter() + " Events.");
+        if(genConfig.DebugMessages == true)
+        {
+            console.log("Event: nodeSim started. -- " + self._nodeSim.EventCounter() + " Events.");
+        }
+
 
     });
 
