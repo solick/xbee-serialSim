@@ -3,6 +3,8 @@
  */
 
 //var nodeList = require('./nodes.js');
+
+
 var events = require('events');
 
 var xbee_api = require('xbee-api');
@@ -12,6 +14,18 @@ var xbeeAPI = new xbee_api.XBeeAPI();
 var xbeeHelper = require('xbee-helper');
 var ZigBeeHelper = new xbeeHelper.ZigBeeHelper();
 
+var genConfig = null;
+
+try {
+    genConfig = require('config.js');
+}
+catch(err) {
+    genConfig = {};
+    genConfig.DebugMessages = true;
+    genConfig.DebugMessagesSimulation = true;
+
+}
+var shObj = require('./lmSHObjects.js');
 /**
  * Class NodeSim
  * Simulation of nodes of a Xbee network
@@ -25,11 +39,14 @@ var NodeSim = function(nodeList)
 
     this._nodeList = nodeList;
     this._eventList = [];
+    this._timerChangeList = [];
 
     if(this._nodeList == null || this._nodeList === 'undefined')
     {
         throw new Error('no nodelist found.');
     }
+
+
 };
 
 /**
@@ -104,7 +121,7 @@ NodeSim.prototype.raiseEvent = function(self, shortMac, type) {
 
     var node = null;
 
-    for (index = 0; index < self._nodeList.length; index++)
+    for (var index = 0; index < self._nodeList.length; index++)
     {
         if(self._nodeList[index].shortMac === shortMac)
         {
@@ -114,6 +131,30 @@ NodeSim.prototype.raiseEvent = function(self, shortMac, type) {
 
     if(node !== null)
     {
+
+        /****
+         *
+         * checking if changes waiting for node
+         */
+        for (var i = 0; i < self._timerChangeList.length; i++) {
+
+            if(self._timerChangeList[i].shortMac === node.shortMac) {
+
+                if(self._timerChangeList[i].type === type) {
+
+                    delete self._eventList[self._eventList.indexOf(this)];
+                    clearInterval(this);
+                    var timer1 = setInterval(self.raiseEvent, node.LckInterval * 1000, self, node.shortMac, "L");
+                    self._eventList.push(timer1);
+
+                    console.log("# xbee-serialsim # Changed LckInterval for " + node.shortMac + " to " + node.LckInterval, "NODE");
+                }
+            }
+
+        }
+
+        /*****************/
+
         var dataStr = "";
 
         if(type == 'L')
@@ -206,8 +247,11 @@ NodeSim.prototype.receiveFrame = function(data) {
     var data_obj = xbeeAPI.parseFrame(data);
 
     //console.log('parsed frame by xbee-serialsim:', data_obj);
-    console.log(ZigBeeHelper.printFrame(data_obj));
 
+    if(genConfig.DebugMessages == true && genConfig.DebugMessagesSimulation == true) {
+
+        console.log(ZigBeeHelper.printFrame(data_obj));
+    }
     var node = this.getNodeForLongMac(data_obj.destination64);
 
     if(node === undefined || node === null && data_obj.destination64.toUpperCase() !== '000000000000FFFF') /** if broadcast **/
@@ -264,9 +308,66 @@ NodeSim.prototype.receiveFrame = function(data) {
 
         case C.FRAME_TYPE.ZIGBEE_RECEIVE_PACKET:
 
-            var cmd_obj = ZigBeeHelper.getATCommand(data_obj.data);
+            var cmd_obj = ZigBeeHelper.getATCommand(ZigBeeHelper.ByteToString( data_obj.data, true));
 
             console.log("cmd_obj: ", cmd_obj);
+
+
+            break;
+
+        case C.FRAME_TYPE.ZIGBEE_TRANSMIT_REQUEST:
+
+            var cmd_obj = ZigBeeHelper.getATCommand(ZigBeeHelper.ByteToString( data_obj.data, true));
+
+            //console.log("cmd_obj: ", cmd_obj);
+
+            for (var i = 0; i < cmd_obj.commandArr.length; i++) {
+
+                var cmdArr = cmd_obj.commandArr[i];
+
+                //console.log(cmdArr);
+
+                switch (parseInt(cmdArr.commandName)) {
+
+                    case shObj.OBJ_LIFECHECK_INTERVAL:
+
+                        console.log("# xbee-serialsim # change lckInterval for "+ node.shortMac +" to " + cmdArr.commandParam, "NODE");
+
+                        node.LckInterval = parseInt(cmdArr.commandParam);
+
+                        var new_Obj = {
+
+                            'shortMac': node.shortMac,
+                            'type': 'L',
+                            'newVal': parseInt(cmdArr.commandParam)
+
+                        };
+
+                        self._timerChangeList.push(new_Obj);
+
+
+                        break;
+
+
+                    default:
+
+                        if(genConfig.DebugMessages == true && genConfig.DebugMessagesSimulation == true) {
+
+                            console.log("# xbee-serialsim # Unknown ");
+                        }
+
+
+                        break;
+
+
+                }
+
+
+
+
+            }
+
+
 
 
             break;
@@ -280,6 +381,8 @@ NodeSim.prototype.receiveFrame = function(data) {
 
 
 };
+
+
 
 
 exports.NodeSim = NodeSim;
