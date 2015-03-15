@@ -4,10 +4,15 @@
 
 
 var SerialSim = require('../../src/serialSim.js');
+var xbee_api = require('xbee-api');
+var C = xbee_api.constants;
+var xbeeAPI = new xbee_api.XBeeAPI();
+
+
 
 describe('xbee-serialsim Class', function() {
 
-    var serialSim = new SerialSim.SerialSim();
+    var serialSim = new SerialSim.SerialSim(xbeeAPI, []);
 
     it('should create a valid object', function() {
 
@@ -23,7 +28,7 @@ describe('xbee-serialsim Class', function() {
 
         beforeEach(function() {
 
-            serialSimTest = new SerialSim.SerialSim();
+            serialSimTest = new SerialSim.SerialSim(xbeeAPI, []);
 
         });
 
