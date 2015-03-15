@@ -11,7 +11,7 @@ var nodeList = [
         longMac: "0013A20000000001",
         LckInterval: 20,
         DateInterval: 30,
-        data: "AT+1=23.15",
+        data: "AT+3=23.15",
         type: "Temperature Sensor"
 
     },
@@ -20,7 +20,7 @@ var nodeList = [
         longMac: "0013A20000000002",
         LckInterval: 30,
         DateInterval: 30,
-        data: "AT+1=0",
+        data: "AT+5=0",
         type: "Door Contact Sensor"
 
     }
