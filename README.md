@@ -1,2 +1,0 @@
-# xbee-serialSim
-
